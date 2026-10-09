@@ -1,0 +1,52 @@
+# --- Secrets ---
+.env
+
+# --- Machine-local runtime state ---
+# Everything the pipeline writes at runtime lives under data/ (see
+# src/channel_vetting/core/paths.py). None of it belongs in a PUBLIC repo:
+#
+#   - Ledgers (quota_log, credit_log, gemini_log) are per-machine counters.
+#     Committing them merges two machines' spend into one nonsense total, and
+#     the credit ledger is real money.
+#   - Caches (search_cache, external_handles_cache, transcript_cache,
+#     video_topics_cache, metadata_screen_cache) are regenerable.
+#   - gemini_cache, backtest_results and outreach_preview/ hold CREATOR PII —
+#     names, model-written reasoning about named people, and in a
+#     --send-configured tree real email addresses.
+#
+# Ignored WHOLESALE rather than file by file: a state file added later is then
+# ignored by default, instead of being one forgotten commit away from being
+# published. Only the .gitkeep is tracked, so a fresh clone has the directory.
+data/*
+!data/.gitkeep
+
+# --- Python ---
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+
+# --- Local-only docs ---
+# Plans, runbooks, audits and TODOs are working notes for whoever is running
+# this, not part of the published project. README.md is the only tracked .md.
+docs/
+
+# --- Agent tooling ---
+# .agents/ holds VENDORED third-party skills. skills-lock.json is tracked and
+# records the source and content hash of each, so they are re-fetchable — the
+# same split as a lockfile without node_modules.
+.agents/
+.claude/
+CLAUDE.md
+.superpowers/
+.gstack/
+
+# --- Node ---
+# Pure-Python project with no package.json. Keep npm artefacts out in case a
+# stray install ever drops them here.
+node_modules/
+package-lock.json
